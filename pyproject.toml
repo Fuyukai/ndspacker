@@ -1,0 +1,79 @@
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+[project]
+name = "ndspacker"
+version = "25.0.0"
+description = "ndstool wrapper"
+authors = [
+    {name = "Lura Skye", email = "fuyukaii@proton.me"},
+]
+dependencies = ["rich>=13.9.4"]
+requires-python = ">=3.13"
+readme = "README.rst"
+license = {text = "GPL-3.0-or-later"}
+
+[project.scripts]
+ndspacker = "ndspacker.__main__:main"
+
+[tool.pdm]
+distribution = true
+
+[tool.pyright]
+pythonVersion = "3.13"
+include = ["src"]
+typeCheckingMode = "strict"
+
+reportImplicitOverride = "warning"
+reportUnusedVariable = false
+reportIncompatibleVariableOverride = false
+reportPrivateUsage = false
+
+[tool.ruff]
+target-version = "py313"
+respect-gitignore = true
+# fix = true
+src = ["src/"]
+line-length = 100
+output-format = "full"
+
+[tool.ruff.lint]
+select = [
+    "RUF",
+    "F",
+    "E",
+    "W",
+    "I",
+    "UP",
+    "B",
+    "Q",
+    "YTT",
+    "PYI",
+    "SIM",
+    "RET",
+    "PERF",
+    "PIE",
+    "SIM",
+    "C4",
+
+    # specific docstring rules
+    "D201", "D204", "D211", "D419",   # less ugly docstrings
+]
+ignore = [
+    "W291",
+    "W293",
+    "PYI021",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/test_*" = ["D"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
+[dependency-groups]
+dev = [
+    "ruff>=0.8.2",
+    "pyright>=1.1.390",
+]
