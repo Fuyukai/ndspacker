@@ -82,7 +82,7 @@ def read_from_elf(elf_path: Path) -> bytes:
 
 
 # == Main entrypoint == #
-def main():
+def main() -> None:
     try:
         arm9_image = Path(sys.argv[1])
         arm7_image = Path(sys.argv[2])
@@ -170,11 +170,12 @@ def main():
         # This makes the DS firmware absolutely freak the fuck out!
         # if borrowed_nds_logo:
         #    print("[cyan]writing fixed logo...[/cyan]")
-        #    
+        #
         #    with open("./rom.nds", "rb+") as f:
         #        f.seek(0xC0)
         #        f.write(borrowed_nds_logo)
         #        f.write((0xCF56).to_bytes(length=2, byteorder="little"))
+
 
 if __name__ == "__main__":
     main()
