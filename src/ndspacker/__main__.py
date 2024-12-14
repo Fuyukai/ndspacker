@@ -1,4 +1,5 @@
 import builtins
+import contextlib
 import shutil
 import subprocess
 import sys
@@ -85,16 +86,19 @@ def read_from_elf(elf_path: Path) -> bytes:
 def main() -> None:
     try:
         arm9_image = Path(sys.argv[1])
-        arm7_image = Path(sys.argv[2])
     except IndexError:
         builtins.print(f"usage: {sys.argv[0]} <path to ARM9> <path to ARM7>", file=sys.stderr)
         sys.exit(1)
+
+    arm7_image: Path | None = None
+    with contextlib.suppress(IndexError):
+        arm7_image = Path(sys.argv[2])
 
     if not arm9_image.exists():
         print(f"[red]no such file[/red]: {arm9_image}")
         sys.exit(1)
 
-    if not arm7_image.exists():
+    if arm7_image and not arm7_image.exists():
         print(f"[red]no such file[/red]: {arm7_image}")
         sys.exit(1)
 
@@ -126,19 +130,24 @@ def main() -> None:
 
     # borrowed_nds_logo: bytes = b""
 
-    if arm7_image.suffix == ".nds":
-        print("[cyan]stealing ARM7 rom image...[/cyan]")
-        with arm7_image.open(mode="rb") as f:
-            raw_data = f.read()
-            arm7_ep, arm7_data = read_arm7_from_rom(raw_data)
+    if arm7_image is not None:
+        if arm7_image.suffix == ".nds":
+            print("[cyan]stealing ARM7 rom image...[/cyan]")
+            with arm7_image.open(mode="rb") as f:
+                raw_data = f.read()
+                arm7_ep, arm7_data = read_arm7_from_rom(raw_data)
 
-            # print("[cyan]stealing official nitro logo...[/cyan]")
-            # borrowed_nds_logo = raw_data[0xc0:0xc0 + 0x9c]
+                # print("[cyan]stealing official nitro logo...[/cyan]")
+                # borrowed_nds_logo = raw_data[0xc0:0xc0 + 0x9c]
 
+        else:
+            print("[cyan]reading ARM7 binary...")
+            arm7_ep = int(get_elf_headers(arm7_image)["entry_point_address"])
+            arm7_data = read_from_elf(arm7_image)
     else:
-        print("[cyan]reading ARM7 binary...")
-        arm7_ep = int(get_elf_headers(arm7_image)["entry_point_address"])
-        arm7_data = read_from_elf(arm7_image)
+        arm7_ep = 0x2380000
+        # PC := PC
+        arm7_data: bytes = b"\xfe\xff\xff\xea"
 
     print(f"[green]ok![/green] entrypoint is [magenta]0x{arm7_ep:0x}[/magenta]")
     print(f"ARM7 image size: [magenta]{len(arm7_data)}[/magenta] bytes")

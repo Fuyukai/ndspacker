@@ -36,6 +36,7 @@ run ``ndspacker <path to ARM9 elf> <path to ARM7 ROM or ELF>`` and it will spit 
 in the current directory.
 
 Only ELF ARM9 images are supported, but for the ARM7 this can either be an ELF image or a donor
-Nitro ROM to take the ARM7 from. 
+Nitro ROM to take the ARM7 from. If no ARM7 is specified, then a stub infinite loop ARM7 will be
+included instead.
 
 The ARM9 *must* be linked at the start of main memory i.e. ``0x2000000``. 
