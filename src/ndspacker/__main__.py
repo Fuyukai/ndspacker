@@ -10,6 +10,12 @@ from subprocess import CompletedProcess
 
 from rich import print
 
+DEFAULT_PACKER_SETTINGS: dict[str, str] = {
+    "maker_code": "01",
+    "game_code": "ENAE",
+    "game_title": "NDSPACKER",
+}
+
 # == Utility Functions == #
 
 
@@ -106,8 +112,7 @@ def main() -> None:
         with (Path.cwd() / "ndspacker.toml").open(mode="rb") as f:
             packer_settings = tomllib.load(f)
     except FileNotFoundError:
-        print("[red]missing ndpacker.toml file![/red]")
-        sys.exit(1)
+        packer_settings = DEFAULT_PACKER_SETTINGS
 
     # ARM9 binaries should always be in the ELF format as they're output from gcc/rustc.
     print("[cyan]reading ARM9 binary...[/cyan]")
